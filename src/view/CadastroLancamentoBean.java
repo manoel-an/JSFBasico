@@ -1,4 +1,5 @@
 package view;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,36 +14,24 @@ import javax.faces.event.ValueChangeEvent;
 import model.Lancamento;
 import model.Pessoa;
 import model.TipoLancamento;
-
-import org.hibernate.Session;
-import org.hibernate.criterion.Order;
-
+import repository.Pessoas;
+import services.GestaoLancamentos;
+import services.RegraNegocioException;
 import util.FacesUtil;
+import util.Repositorios;
 
 @ManagedBean
 @ViewScoped
 public class CadastroLancamentoBean implements Serializable {
 
+    private Repositorios repositorios = new Repositorios();
     private List<Pessoa> pessoas = new ArrayList<Pessoa>();
     private Lancamento lancamento = new Lancamento();
-    private String teste = "Teste";
 
-    @SuppressWarnings("unchecked")
     @PostConstruct
     public void init() {
-        Session session = (Session) FacesUtil.getRequestAttribute("session");  
-        
-        this.pessoas = session.createCriteria(Pessoa.class)
-                .addOrder(Order.asc("nome"))
-                .list();
-        System.out.println("TESTE JREBEL " + teste);
-        teste();
-    }
-    
-    public void teste() {
-        if (teste.equals("Teste")) {
-            //JOptionPane.showMessageDialog(null, teste);
-        }
+        Pessoas pessoas = this.repositorios.getPessoas();
+        this.pessoas = pessoas.todas();
     }
     
     public void lancamentoPagoModificado(ValueChangeEvent event) {
@@ -51,16 +40,21 @@ public class CadastroLancamentoBean implements Serializable {
         FacesContext.getCurrentInstance().renderResponse();
     }
     
-    public void cadastrar() {
-        Session session = (Session) FacesUtil.getRequestAttribute("session");
-        session.merge(this.lancamento);
-        
-        this.lancamento = new Lancamento();
-        
-        String msg = "Cadastro efetuado com sucesso!";
-        FacesContext.getCurrentInstance().addMessage(null,
-                new FacesMessage(FacesMessage.SEVERITY_INFO, msg, msg));
-        //System.out.println("Passei aqui");
+    public void salvar() {
+        GestaoLancamentos gestaoLancamentos = new GestaoLancamentos(this.repositorios.getLancamentos());
+        try {
+            gestaoLancamentos.salvar(lancamento);
+            
+            this.lancamento = new Lancamento();
+            
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_INFO, "Lançamento salvo com sucesso!");
+        } catch (RegraNegocioException e) {
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, e.getMessage());
+        }
+    }
+    
+    public boolean isEditando() {
+        return this.lancamento.getCodigo() != null;
     }
     
     public TipoLancamento[] getTiposLancamentos() {
@@ -69,6 +63,15 @@ public class CadastroLancamentoBean implements Serializable {
 
     public Lancamento getLancamento() {
         return lancamento;
+    }
+    
+    public void setLancamento(Lancamento lancamento) throws CloneNotSupportedException {
+        this.lancamento = lancamento;
+        if (this.lancamento == null) {
+            this.lancamento = new Lancamento();
+        } else {
+            this.lancamento = (Lancamento) lancamento.clone();
+        }
     }
 
     public List<Pessoa> getPessoas() {

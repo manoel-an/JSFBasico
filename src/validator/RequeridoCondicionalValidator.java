@@ -1,4 +1,4 @@
-package converter;
+package validator;
 
 import javax.faces.application.FacesMessage;
 import javax.faces.component.UIComponent;

@@ -22,3 +22,4 @@ insert into pessoa (nome) values ('Thau Telecom');
 insert into pessoa (nome) values ('Pastelaria 99');
 insert into pessoa (nome) values ('Pastelaria do Jose');
 insert into pessoa (nome) values ('Mercado Preço Bom');
+insert into pessoa (nome) values ('Mercearia Vem K');
