@@ -1,5 +1,7 @@
 package view;
 
+import infra.I18N;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,9 +49,9 @@ public class CadastroLancamentoBean implements Serializable {
             
             this.lancamento = new Lancamento();
             
-            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_INFO, "Lançamento salvo com sucesso!");
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_INFO, FacesUtil.getMensagemI18n("entry_saved"));
         } catch (RegraNegocioException e) {
-            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, e.getMessage());
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, FacesUtil.getMensagemI18n(e.getMessage()));
         }
     }
     

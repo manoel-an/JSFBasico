@@ -8,6 +8,7 @@ import javax.faces.convert.FacesConverter;
 
 import model.Lancamento;
 import repository.Lancamentos;
+import util.FacesUtil;
 import util.Repositorios;
 
 @FacesConverter(forClass=Lancamento.class)
@@ -24,7 +25,7 @@ public class LancamentoConverter implements Converter {
 			retorno = lancamentos.porCodigo(new Integer(value));
 			
 			if (retorno == null) {
-				String descricaoErro = "Lançamento não existe.";
+			    String descricaoErro = FacesUtil.getMensagemI18n("entry_does_not_exist");
 				FacesMessage message = new FacesMessage(FacesMessage.SEVERITY_ERROR,
 						descricaoErro, descricaoErro);
 				throw new ConverterException(message);
