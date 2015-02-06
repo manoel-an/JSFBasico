@@ -29,4 +29,9 @@ public class PessoasHibernate implements Pessoas {
 		return (Pessoa) session.get(Pessoa.class, codigo);
 	}
 
+    @Override
+    public Pessoa guardar(Pessoa pessoa) {
+        return (Pessoa) session.merge(pessoa);
+    }
+
 }

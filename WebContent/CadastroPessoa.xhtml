@@ -1,0 +1,29 @@
+<ui:composition template="/template/LayoutPadrao.xhtml"
+	xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:f="http://java.sun.com/jsf/core">
+
+	<ui:define name="titulo">#{i18N.getKey('people')}</ui:define>
+
+	<ui:define name="conteudo">
+		<h1>#{i18N.getKey('people')}</h1>
+		<h:form id="frm">
+			<h:button value="#{i18N.getKey('new_msg')}" outcome="CadastroPessoa" />
+			<h:messages showDetail="false" showSummary="true"
+				styleClass="form-messages" errorClass="error" infoClass="info" />
+
+			<h:panelGrid columns="2" styleClass="form-grid"
+				columnClasses="label, campo" id="panel">
+                <h:outputLabel value="#{i18N.getKey('name')}"/>
+                <h:inputText size="60" value="#{cadastroPessoaBean.pessoa.nome}" 
+                    required="true" label="#{i18N.getKey('name')}" />  
+                <h:outputLabel/>
+                <h:commandButton value="#{msg.save}" action="#{cadastroPessoaBean.salvar}">
+                    <f:ajax execute="@form" render="@all"/>
+                </h:commandButton>                                      
+			</h:panelGrid>
+		</h:form>
+	</ui:define>
+
+</ui:composition>
