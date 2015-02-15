@@ -3,7 +3,8 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets"
     xmlns:f="http://java.sun.com/jsf/core"
-    xmlns:aw="http://java.sun.com/jsf/composite/algaworks">
+    xmlns:aw="http://java.sun.com/jsf/composite/algaworks"
+    xmlns:p="http://primefaces.org/ui">
     
     <ui:define name="titulo">Lançamentos</ui:define>
     
@@ -11,8 +12,8 @@
         <h:outputStylesheet library="css" name="consulta-lancamentos.css"/>
     
         <h1>Lançamentos</h1>
-
         <h:form id="frm">
+        	<p:commandButton value="Relatorio" oncomplete="alert('oi')"/>
             <h:button value="Novo lançamento" outcome="CadastroLancamento" 
                 rendered="#{request.isUserInRole('cadastro')}"/>
 
