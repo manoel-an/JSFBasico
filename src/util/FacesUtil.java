@@ -42,7 +42,7 @@ public class FacesUtil {
 
     public static Properties getProp(Locale locale) throws IOException {
         Properties props = new Properties();
-        FileInputStream file = new FileInputStream("/Projeto/jsfbasico/src/resources/sistema_"+locale.getLanguage()+".properties");
+        FileInputStream file = new FileInputStream("/Projeto/JSFBasico/src/resources/sistema_"+locale.getLanguage()+".properties");
         props.load(file);
         return props;
     }
