@@ -46,5 +46,13 @@ public class FacesUtil {
         props.load(file);
         return props;
     }
+    
+    public static String getCaminhoWeb() throws Exception {
+        String caminhoWeb = "";
+        caminhoWeb = FacesUtil.class.getResource("").getPath();
+        caminhoWeb = caminhoWeb.substring(0, caminhoWeb.indexOf("WEB-INF"));
+        //String caminhoWeb2 = caminhoWeb.replace("/", File.separator);
+        return caminhoWeb;
+    }    
 
 }

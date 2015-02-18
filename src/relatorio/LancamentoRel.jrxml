@@ -13,7 +13,7 @@
 	<parameter name="SUBREPORT_DIR" class="java.lang.String">
 		<defaultValueExpression><![CDATA["/home/otimize/EMPRESA/2011/FABRICA/SEI/PROJETO/SEI/src/java/relatorio/designRelatorio/academico/"]]></defaultValueExpression>
 	</parameter>
-	<field name="pessoa" class="java.lang.String"/>
+	<field name="pessoa.nome" class="java.lang.String"/>
 	<field name="descricao" class="java.lang.String"/>
 	<field name="valor" class="java.math.BigDecimal"/>
 	<field name="dataVencimento" class="java.util.Date"/>
@@ -204,7 +204,7 @@
 				<textElement>
 					<font fontName="Arial" size="8" isBold="true"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{pessoa}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{pessoa.nome}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="186" y="0" width="123" height="12" uuid="7e7af3bb-0471-4084-91b7-061f16eaf968"/>
