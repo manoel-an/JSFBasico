@@ -59,7 +59,7 @@ public class ConsultaLancamentoBean implements Serializable {
 
     public void excluir() {
         if (this.lancamentoSelecionado.isPago()) {
-            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Lançamento já foi pago e não pode ser excluído.");
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Lanï¿½amento jï¿½ foi pago e nï¿½o pode ser excluï¿½do.");
         } else {
             Session session = HibernateUtil.getSession();
             Transaction trx = session.beginTransaction();
@@ -71,7 +71,7 @@ public class ConsultaLancamentoBean implements Serializable {
             
             this.inicializar();
             
-            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_INFO, "Lançamento excluido com sucesso!");
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_INFO, "Lanï¿½amento excluido com sucesso!");
         }
     }
     
@@ -97,7 +97,7 @@ public class ConsultaLancamentoBean implements Serializable {
 			FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Deu Merda");
 		}     	
         Map parametros = new HashMap();
-        parametros.put("tituloRelatorio", "Lançamentos");
+        parametros.put("tituloRelatorio", "Lanï¿½amentos");
         parametros.put("logoPadraoRelatorio", "/Projeto/JSFBasico/WebContent/imagens/logo.png");
         JasperPrint printer = null;
 		try {
@@ -125,64 +125,88 @@ public class ConsultaLancamentoBean implements Serializable {
         }
     }
     
-	private void ImprimirDOC() throws Exception {
-    	JRBeanCollectionDataSource jrds = new JRBeanCollectionDataSource(this.lancamentos);
-    	File arquivoIReport = new File("/Projeto/JSFBasico/src/relatorio/LancamentoRel.jasper");
-    	JasperReport jasperReport = null;
+    public void imprimirDOC(){
+        JRBeanCollectionDataSource jrds = new JRBeanCollectionDataSource(this.lancamentos);
+        File arquivoIReport = new File("/Projeto/JSFBasico/src/relatorio/LancamentoRel.jasper");
+        JasperReport jasperReport = null;
+        try {
+            jasperReport = (JasperReport) JRLoader.loadObject(arquivoIReport);
+        } catch (JRException e) {
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Deu Merda");
+        }       
         Map parametros = new HashMap();
-        parametros.put("tituloRelatorio", "Lançamentos");
-        parametros.put("logoPadraoRelatorio", "/Projeto/JSFBasico/WebContent/imagens/logo.png");        
-        JasperPrint printer = JasperFillManager.fillReport(jasperReport, parametros, jrds);
+        parametros.put("tituloRelatorio", "Lanï¿½amentos");
+        parametros.put("logoPadraoRelatorio", "/Projeto/JSFBasico/WebContent/imagens/logo.png");
+        JasperPrint printer = null;
+        try {
+            printer = JasperFillManager.fillReport(jasperReport, parametros, jrds);
+        } catch (JRException e1) {
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
+        } 
         nomeRel = (new Date().getTime());
         File docFile = new File("/Projeto/JSFBasico/src/relatorio/"+ nomeRel + ".rtf");
-		if (docFile.exists()) {
-			try {
-				docFile.delete();
-			} catch (Exception e) {
-				FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
-			}
-		}
-		JRRtfExporter jrRtfExporter = new JRRtfExporter();
-		jrRtfExporter.setParameter(JRExporterParameter.JASPER_PRINT, printer);
-		jrRtfExporter.setParameter(JRExporterParameter.OUTPUT_FILE, docFile);
-		try{
+        if (docFile.exists()) {
+            try {
+                docFile.delete();
+            } catch (Exception e) {
+                FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
+            }
+        }
+        JRRtfExporter jrRtfExporter = new JRRtfExporter();
+        jrRtfExporter.setParameter(JRExporterParameter.JASPER_PRINT, printer);
+        jrRtfExporter.setParameter(JRExporterParameter.OUTPUT_FILE, docFile);
+        try{
             jrRtfExporter.exportReport();
         }catch(Exception erro){
-    		FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
         }
-		jrRtfExporter = null;        
-	}
-	
-	private void ImprimirExcel() throws Exception {
-    	JRBeanCollectionDataSource jrds = new JRBeanCollectionDataSource(this.lancamentos);
-    	File arquivoIReport = new File("/Projeto/JSFBasico/src/relatorio/LancamentoRel.jasper");
-    	JasperReport jasperReport = null;
+        jrRtfExporter = null;           
+    }
+    
+    public void imprimirExcel(){
+        JRBeanCollectionDataSource jrds = new JRBeanCollectionDataSource(this.lancamentos);
+        File arquivoIReport = new File("/Projeto/JSFBasico/src/relatorio/LancamentoRel.jasper");
+        JasperReport jasperReport = null;
+        try {
+            jasperReport = (JasperReport) JRLoader.loadObject(arquivoIReport);
+        } catch (JRException e) {
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Deu Merda");
+        }       
         Map parametros = new HashMap();
-        parametros.put("tituloRelatorio", "Lançamentos");
-        parametros.put("logoPadraoRelatorio", "/Projeto/JSFBasico/WebContent/imagens/logo.png");        
-        JasperPrint printer = JasperFillManager.fillReport(jasperReport, parametros, jrds);
+        parametros.put("tituloRelatorio", "Lanï¿½amentos");
+        parametros.put("logoPadraoRelatorio", "/Projeto/JSFBasico/WebContent/imagens/logo.png");
+        JasperPrint printer = null;
+        try {
+            printer = JasperFillManager.fillReport(jasperReport, parametros, jrds);
+        } catch (JRException e1) {
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
+        } 
         nomeRel = (new Date().getTime());
         File excelFile = new File("/Projeto/JSFBasico/src/relatorio/"+ nomeRel + ".xls");
         if (excelFile.exists()) {
-			try {
-				excelFile.delete();
-			} catch (Exception e) {
-	    		FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro ao exportar para XLS");
-			}
-		}
-		JRXlsExporter jrpdfexporter = new JRXlsExporter();
-		jrpdfexporter.setParameter(JRExporterParameter.JASPER_PRINT, this.gerarRelatorioJasperPrintObjeto(parametros, this.lancamentos));		
+            try {
+                excelFile.delete();
+            } catch (Exception e) {
+                FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro ao exportar para XLS");
+            }
+        }
+        JRXlsExporter jrpdfexporter = new JRXlsExporter();
+        try {
+            jrpdfexporter.setParameter(JRExporterParameter.JASPER_PRINT, this.gerarRelatorioJasperPrintObjeto(parametros, this.lancamentos));
+        } catch (Exception e) {
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
+        }       
         jrpdfexporter.setParameter(JRExporterParameter.OUTPUT_FILE, excelFile);
-		jrpdfexporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE);
-		jrpdfexporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_COLUMNS, Boolean.TRUE);
-		jrpdfexporter.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
-		try{
+        jrpdfexporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_ROWS, Boolean.TRUE);
+        jrpdfexporter.setParameter(JRXlsExporterParameter.IS_REMOVE_EMPTY_SPACE_BETWEEN_COLUMNS, Boolean.TRUE);
+        jrpdfexporter.setParameter(JRXlsExporterParameter.IS_WHITE_PAGE_BACKGROUND, Boolean.FALSE);
+        try{
             jrpdfexporter.exportReport();
         }catch(Exception erro){
-    		FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
         }
-		jrpdfexporter = null;       
-	}
+        jrpdfexporter = null;        
+    }
     
     public String getDownload(){
     	if(nomeRel != 0.0) {
