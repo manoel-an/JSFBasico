@@ -96,9 +96,15 @@
                     </h:commandLink>                   
                 </h:column>                
             </h:dataTable>
-			 	<p:commandButton value="Relatorio" action="#{consultaLancamentoBean.imprimirPDF}" oncomplete="#{consultaLancamentoBean.download}">
+			 	<p:commandButton value="Relatorio PDF" action="#{consultaLancamentoBean.imprimirPDF}" oncomplete="#{consultaLancamentoBean.download}">
 			 		<f:ajax render="@this"/>
 			 	</p:commandButton>
+                <p:commandButton value="Relatorio DOC" action="#{consultaLancamentoBean.imprimirDOC}" oncomplete="#{consultaLancamentoBean.download}">
+                    <f:ajax render="@this"/>
+                </p:commandButton>
+                <p:commandButton value="Relatorio XLS" action="#{consultaLancamentoBean.imprimirExcel}" oncomplete="#{consultaLancamentoBean.download}">
+                    <f:ajax render="@this"/>
+                </p:commandButton>                			 	
         </h:form>
     </ui:define>
     
