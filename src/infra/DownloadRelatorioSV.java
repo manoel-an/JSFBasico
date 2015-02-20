@@ -36,15 +36,16 @@ public class DownloadRelatorioSV extends HttpServlet {
         try {
 
             arquivoGet = (String) request.getParameter("relatorio");
+            nomeFile = (String) request.getParameter("nome");
             arquivoPost = (String) request.getAttribute("relatorio");
             arquivo = "";
 
             if (arquivoGet == null) {
                 arquivo = arquivoPost;
-                nomeFile = "Lancamento.pdf";
+                nomeFile = nomeFile + arquivoPost.substring(arquivoPost.length()-4, arquivoPost.length());
             } else {
                 arquivo = arquivoGet;
-                nomeFile = "Lancamento.pdf";
+                nomeFile = nomeFile + arquivoGet.substring(arquivoGet.length()-4, arquivoGet.length());
             }
             file = new File(arquivo);
 //            String nomeFile = arquivo.substring(arquivo.lastIndexOf(File.separator) + 1, arquivo.length());

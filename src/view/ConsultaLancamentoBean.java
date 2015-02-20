@@ -1,6 +1,12 @@
 package view;
 
+import infra.GeradorRelatorio;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,10 +15,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.activation.MimetypesFileTypeMap;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
 
 import model.Lancamento;
 import net.sf.jasperreports.engine.JRDataSource;
@@ -32,18 +40,20 @@ import net.sf.jasperreports.engine.util.JRLoader;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Order;
+import org.primefaces.model.DefaultStreamedContent;
+import org.primefaces.model.StreamedContent;
 
 import util.FacesUtil;
 import util.HibernateUtil;
 
 @ManagedBean
 @ViewScoped
-public class ConsultaLancamentoBean implements Serializable {
+public class ConsultaLancamentoBean extends GeradorRelatorio implements Serializable {
 
     private List<Lancamento> lancamentos = new ArrayList<Lancamento>();
     private Lancamento lancamentoSelecionado;
-    private static double nomeRel;
-
+    private StreamedContent file = null;
+    private  File tempFile = null;
     
     @SuppressWarnings("unchecked")
     @PostConstruct
@@ -55,11 +65,12 @@ public class ConsultaLancamentoBean implements Serializable {
                 .list();
         
         session.close();
+        setRealizaDownload(false);
     }
 
     public void excluir() {
         if (this.lancamentoSelecionado.isPago()) {
-            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Lan�amento j� foi pago e n�o pode ser exclu�do.");
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Lançamento já foi pago e não pode ser excluído.");
         } else {
             Session session = HibernateUtil.getSession();
             Transaction trx = session.beginTransaction();
@@ -71,7 +82,7 @@ public class ConsultaLancamentoBean implements Serializable {
             
             this.inicializar();
             
-            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_INFO, "Lan�amento excluido com sucesso!");
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_INFO, "Lançamento excluido com sucesso!");
         }
     }
     
@@ -97,7 +108,7 @@ public class ConsultaLancamentoBean implements Serializable {
 			FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Deu Merda");
 		}     	
         Map parametros = new HashMap();
-        parametros.put("tituloRelatorio", "Lan�amentos");
+        parametros.put("tituloRelatorio", "Lançamentos");
         parametros.put("logoPadraoRelatorio", "/Projeto/JSFBasico/WebContent/imagens/logo.png");
         JasperPrint printer = null;
 		try {
@@ -105,8 +116,9 @@ public class ConsultaLancamentoBean implements Serializable {
 		} catch (JRException e1) {
 			FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
 		} 
-		nomeRel = (new Date().getTime());
-        File pdfFile = new File("/Projeto/JSFBasico/src/relatorio/"+ nomeRel + ".pdf");
+		setNomeInicialRelatorio(Long.toString(new Date().getTime()) + ".pdf");
+		setNomeFinalrelatorio("Lancamento");
+        File pdfFile = new File("/Projeto/JSFBasico/src/relatorio/"+ getNomeInicialRelatorio());
             if (pdfFile.exists()) {
                 try {
                     pdfFile.delete();
@@ -123,6 +135,7 @@ public class ConsultaLancamentoBean implements Serializable {
         	FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, erro.getMessage());
         	
         }
+		setRealizaDownload(true);
     }
     
     public void imprimirDOC(){
@@ -135,7 +148,7 @@ public class ConsultaLancamentoBean implements Serializable {
             FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Deu Merda");
         }       
         Map parametros = new HashMap();
-        parametros.put("tituloRelatorio", "Lan�amentos");
+        parametros.put("tituloRelatorio", "Lancamentos");
         parametros.put("logoPadraoRelatorio", "/Projeto/JSFBasico/WebContent/imagens/logo.png");
         JasperPrint printer = null;
         try {
@@ -143,8 +156,9 @@ public class ConsultaLancamentoBean implements Serializable {
         } catch (JRException e1) {
             FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
         } 
-        nomeRel = (new Date().getTime());
-        File docFile = new File("/Projeto/JSFBasico/src/relatorio/"+ nomeRel + ".rtf");
+        setNomeInicialRelatorio(Long.toString(new Date().getTime()) + ".rtf");
+        setNomeFinalrelatorio("Lancamento");
+        File docFile = new File("/Projeto/JSFBasico/src/relatorio/"+ getNomeInicialRelatorio());
         if (docFile.exists()) {
             try {
                 docFile.delete();
@@ -160,7 +174,8 @@ public class ConsultaLancamentoBean implements Serializable {
         }catch(Exception erro){
             FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
         }
-        jrRtfExporter = null;           
+        jrRtfExporter = null;
+        setRealizaDownload(true);
     }
     
     public void imprimirExcel(){
@@ -173,7 +188,7 @@ public class ConsultaLancamentoBean implements Serializable {
             FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Deu Merda");
         }       
         Map parametros = new HashMap();
-        parametros.put("tituloRelatorio", "Lan�amentos");
+        parametros.put("tituloRelatorio", "Lançamentos");
         parametros.put("logoPadraoRelatorio", "/Projeto/JSFBasico/WebContent/imagens/logo.png");
         JasperPrint printer = null;
         try {
@@ -181,8 +196,9 @@ public class ConsultaLancamentoBean implements Serializable {
         } catch (JRException e1) {
             FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
         } 
-        nomeRel = (new Date().getTime());
-        File excelFile = new File("/Projeto/JSFBasico/src/relatorio/"+ nomeRel + ".xls");
+        setNomeInicialRelatorio(Long.toString(new Date().getTime()) + ".xls");
+        setNomeFinalrelatorio("Lancamento");
+        File excelFile = new File("/Projeto/JSFBasico/src/relatorio/"+ getNomeInicialRelatorio());
         if (excelFile.exists()) {
             try {
                 excelFile.delete();
@@ -205,18 +221,10 @@ public class ConsultaLancamentoBean implements Serializable {
         }catch(Exception erro){
             FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Erro");
         }
-        jrpdfexporter = null;        
+        jrpdfexporter = null;
+        setRealizaDownload(true);
     }
     
-    public String getDownload(){
-    	if(nomeRel != 0.0) {
-    		String link = "location.href='/JSFBasico/DownloadRelatorioSV?relatorio=/Projeto/JSFBasico/src/relatorio/"+ nomeRel + ".pdf'";
-    		nomeRel = 0.0;
-    		return link;   	
-    	} else {
-    		return "";
-    	}
-    }
     
 	public JasperPrint gerarRelatorioJasperPrintObjeto( Map parametros, Collection listaObjetos) throws Exception {
 		try {
@@ -234,6 +242,54 @@ public class ConsultaLancamentoBean implements Serializable {
 		} catch (Exception e) {
 			throw e;
 		}
-	}     
+	}
+	
+    public StreamedContent getFilePDF() {
+        tempFile = new File("/Projeto/JSFBasico/src/relatorio/"+ getNomeInicialRelatorio());
+        try {
+            file = new DefaultStreamedContent(new FileInputStream(tempFile), "application/pdf", getNomeFinalrelatorio());
+        } catch (FileNotFoundException e) {
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Arquivo não encontrado" +getNomeInicialRelatorio());
+        } 
+        return file;
+    }
+    
+    public void deletaArquivo(){
+        if(tempFile != null) {
+            try {
+                file.getStream().close();
+            } catch (IOException e) {
+                FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Arquivo não pode ser fechado");
+            } finally {
+                tempFile.delete();
+            }
+        }
+    }
+	
+    public StreamedContent getFileRTF() {
+        StreamedContent file;
+        //String caminhoWebInf = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/WEB-INF/");
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream("/Projeto/JSFBasico/src/relatorio/"+ getNomeInicialRelatorio());
+        } catch (FileNotFoundException e) {
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Arquivo não encontrado" +getNomeInicialRelatorio());
+        } //Caminho onde está salvo o arquivo.
+        file = new DefaultStreamedContent(stream, "application/octet-stream", getNomeFinalrelatorio() + ".rtf");  
+        return file;  
+    }
+    
+    public StreamedContent getFileXLS() {
+        StreamedContent file;
+        //String caminhoWebInf = FacesContext.getCurrentInstance().getExternalContext().getRealPath("/WEB-INF/");
+        InputStream stream = null;
+        try {
+            stream = new FileInputStream("/Projeto/JSFBasico/src/relatorio/"+ getNomeInicialRelatorio());
+        } catch (FileNotFoundException e) {
+            FacesUtil.adicionarMensagem(FacesMessage.SEVERITY_ERROR, "Arquivo não encontrado" +getNomeInicialRelatorio());
+        } //Caminho onde está salvo o arquivo.
+        file = new DefaultStreamedContent(stream, "application/vnd.ms-excel", getNomeFinalrelatorio() + ".xls");  
+        return file;  
+    }       
     
 }
