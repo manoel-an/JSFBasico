@@ -96,15 +96,16 @@
                     </h:commandLink>                   
                 </h:column>                
             </h:dataTable>
-			 	<p:commandButton value="Relatorio PDF" action="#{consultaLancamentoBean.imprimirPDF}" oncomplete="#{consultaLancamentoBean.download}">
-			 		<f:ajax render="@this"/>
+			 	<p:commandButton value="Relatorio PDF" actionListener="#{consultaLancamentoBean.imprimirPDF}" ajax="false" onclick="PrimeFaces.monitorDownload(null, stop)">
+                       <p:fileDownload value="#{consultaLancamentoBean.filePDF}"  />
+                       <p:remoteCommand name="stop" id="stop" action="#{consultaLancamentoBean.deletaArquivo}"/>
 			 	</p:commandButton>
-                <p:commandButton value="Relatorio DOC" action="#{consultaLancamentoBean.imprimirDOC}" oncomplete="#{consultaLancamentoBean.download}">
-                    <f:ajax render="@this"/>
+                <p:commandButton value="Relatorio DOC" actionListener="#{consultaLancamentoBean.imprimirDOC}" ajax="false">
+                       <p:fileDownload value="#{consultaLancamentoBean.fileRTF}" />
                 </p:commandButton>
-                <p:commandButton value="Relatorio XLS" action="#{consultaLancamentoBean.imprimirExcel}" oncomplete="#{consultaLancamentoBean.download}">
-                    <f:ajax render="@this"/>
-                </p:commandButton>                			 	
+                <p:commandButton value="Relatorio XLS" actionListener="#{consultaLancamentoBean.imprimirExcel}" ajax="false">
+                       <p:fileDownload value="#{consultaLancamentoBean.fileXLS}" />
+                </p:commandButton>              			 	
         </h:form>
     </ui:define>
     
